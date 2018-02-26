@@ -1,0 +1,42 @@
+--- a/PKGBUILD	2018-02-26 14:47:27.023543274 +0700
++++ b/PKGBUILD	2018-02-26 14:50:51.685852170 +0700
+@@ -2,7 +2,7 @@
+ # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+ # Maintainer: Thomas Baechler <thomas@archlinux.org>
+ 
+-pkgbase=linux               # Build stock -ARCH kernel
++pkgbase=linux-apparmor      # Build stock -ARCH kernel
+ #pkgbase=linux-custom       # Build kernel with a different name
+ _srcname=linux-4.15
+ pkgver=4.15.6
+@@ -50,7 +50,7 @@
+   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
+ 
+   # disable USER_NS for non-root users by default
+-  patch -Np1 -i ../0001-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
++  # patch -Np1 -i ../0001-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+ 
+   # https://bugs.archlinux.org/task/56711
+   patch -Np1 -i ../0002-drm-i915-edp-Only-use-the-alternate-fixed-mode-if-it.patch
+@@ -60,6 +60,21 @@
+ CONFIG_LOCALVERSION_AUTO=n
+ END
+ 
++  cat <<EOF >> .config
++CONFIG_SECURITY_APPARMOR=y
++CONFIG_SECURITY_APPARMOR_BOOTPARAM_VALUE=1
++CONFIG_SECURITY_APPARMOR_HASH=y
++CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=y
++CONFIG_SECURITY_APPARMOR_COMPAT_24=y
++CONFIG_DEFAULT_SECURITY_APPARMOR=y
++CONFIG_DEFAULT_SECURITY="apparmor"
++
++# CONFIG_NETFILTER_XT_TARGET_AUDIT is not set
++# CONFIG_SECURITY_SELINUX is not set
++# CONFIG_DEFAULT_SECURITY_DAC is not set
++# CONFIG_SECURITY_APPARMOR_DEBUG is not set
++EOF
++
+   # set extraversion to pkgrel and empty localversion
+   sed -e "/^EXTRAVERSION =/s/=.*/= -${pkgrel}/" \
+       -e "/^EXTRAVERSION =/aLOCALVERSION =" \
